@@ -43,7 +43,7 @@ jobs:
       env:
         DATABASE_URL: postgres://postgres:postgres@localhost:5432/test_db
       run: |
-        python manage.py migrate
+        python Talocka/manage.py migrate
 
     - name: Run tests
       env:
