@@ -1,0 +1,10 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+<h1>Projets</h1>
+<form method="POST" action="{% url 'create_projet' %}">
+    {% csrf_token %}
+    {{ form.as_p }} 
+    <button type="submit">Créer le projet</button>
+</form>
+{% endblock %}
