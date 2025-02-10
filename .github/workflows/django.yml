@@ -41,7 +41,7 @@ jobs:
 
     - name: Run migrations
       env:
-        DATABASE_URL: postgres://postgres:postgres@localhost:5432/test_db
+        DATABASE_URL: postgres://postgres:postgres@localhost:5432/Talocka
       run: |
         python Talocka/manage.py migrate
 
