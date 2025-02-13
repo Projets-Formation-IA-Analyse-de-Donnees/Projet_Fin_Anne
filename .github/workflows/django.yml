@@ -16,13 +16,13 @@ jobs:
       postgres:
         image: postgres:13
         env:
-          POSTGRES_USER: user
-          POSTGRES_PASSWORD: password
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
           POSTGRES_DB: mydb
         ports:
           - 5432:5432
         options: >-
-          --health-cmd="pg_isready -U user -d mydb"
+          --health-cmd="pg_isready -U postgres -d mydb"
           --health-timeout=30s
           --health-start-period=10s
           --health-retries=5
@@ -31,29 +31,34 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v2
 
-    - name: Vérifier les fichiers présents
+    - name: Afficher la structure du projet
       run: |
-        echo "Emplacement actuel :"
         pwd
-        echo "Contenu du répertoire :"
         ls -R
 
-    - name: Installer Docker Compose
+    - name: Installer Docker et Docker Compose
       run: |
-        sudo curl -L "https://github.com/docker/compose/releases/download/v2.18.1/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
-        sudo chmod +x /usr/local/bin/docker-compose
+        sudo apt-get update
+        sudo apt-get install -y docker-compose
         docker-compose --version
 
     - name: Démarrer Docker Compose
       run: |
         cd Talocka  # Aller dans le bon répertoire
-        ls -la  # Vérifier la présence du fichier
-        docker-compose -f docker-compose.yml up -d
-        docker-compose exec web python manage.py migrate
-        docker-compose exec web python manage.py test
+        docker-compose up -d --build
+        docker-compose ps  # Vérifier si les conteneurs tournent
+
+    - name: Exécuter les migrations
+      run: |
+        cd Talocka
+        docker-compose run web python manage.py migrate
+
+    - name: Exécuter les tests Django
+      run: |
+        cd Talocka
+        docker-compose run web python manage.py test
 
     - name: Arrêter Docker Compose
       run: |
         cd Talocka
         docker-compose down
-
