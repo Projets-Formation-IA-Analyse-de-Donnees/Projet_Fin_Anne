@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 """
 
 from pathlib import Path
+import mongoengine
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -38,7 +39,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'Authentification',
-    'Application_1'
+    'Application_1',
+    'Projet'
 ]
 
 MIDDLEWARE = [
@@ -85,6 +87,14 @@ DATABASES = {
         'PORT': '5432',
     }
 }
+
+mongoengine.connect(
+    db='mydb',  
+    username='mongo',
+    password='mongo',
+    host='mongodb://mongodb:27017/mydb', 
+    authentication_source='admin',  
+)
 
 # Password validation
 # https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators
