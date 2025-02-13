@@ -20,6 +20,7 @@ jobs:
         ports:
           - 5432:5432
         options: >-
+          --health-cmd pg_isready
           --health-interval 5s
           --health-timeout 10s
           --health-retries 10
@@ -38,38 +39,28 @@ jobs:
         python -m pip install --upgrade pip
         pip install -r requirements.txt
 
-    - name: Check running containers
-      run: docker ps -a
-
-    - name: Debug PostgreSQL Connection
-      run: |
-        PGPASSWORD=postgres psql -h localhost -U postgres -c "\l" || PGPASSWORD=postgres psql -h postgres -U postgres -c "\l"
-
     - name: Wait for PostgreSQL to be ready
       run: |
-        for i in {1..30}; do
-          if PGPASSWORD=postgres psql -h localhost -U postgres -d Talocka -c "SELECT 1;" > /dev/null 2>&1; then
-            echo "PostgreSQL is ready!"
-            exit 0
-          fi
+        until PGPASSWORD=postgres psql -h postgres -U postgres -d Talocka -c "SELECT 1;" > /dev/null 2>&1; do
           echo "Waiting for PostgreSQL..."
           sleep 2
         done
-        echo "PostgreSQL did not become ready in time."
-        exit 1
+
+    - name: Vérifier la connexion PostgreSQL
+      run: |
+        PGPASSWORD=postgres psql -h postgres -U postgres -d Talocka -c "SELECT 1;"
 
     - name: Run migrations
       env:
-        DATABASE_URL: postgres://postgres:postgres@postgres:5432/Talocka
+        DATABASE_URL: postgresql://postgres:postgres@postgres:5432/Talocka
       run: |
-        python Talocka/manage.py migrate
-
-    - name: Create test database
-      run: |
-        PGPASSWORD=postgres psql -h localhost -U postgres -c "CREATE DATABASE test_db;"
+        cd Talocka
+        python manage.py migrate
 
     - name: Run tests
       env:
-        DATABASE_URL: postgres://postgres:postgres@localhost:5432/test_db
+        DATABASE_URL: postgresql://postgres:postgres@postgres:5432/Talocka
+        PGPASSWORD: postgres
       run: |
+        cd Talocka
         python manage.py test
