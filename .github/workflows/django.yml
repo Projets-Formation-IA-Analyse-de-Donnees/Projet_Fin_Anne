@@ -49,26 +49,17 @@ jobs:
           echo "Waiting for PostgreSQL..."
           sleep 2
         done
-        echo "PostgreSQL failed to start. Dumping logs:"
-        docker logs $(docker ps -q --filter "ancestor=postgres:13")
+        echo "PostgreSQL failed to start. Exiting."
         exit 1
-      
-
-    - name: Vérifier la connexion PostgreSQL
-      run: |
-        PGPASSWORD=postgres psql -h postgres -U postgres -d Talocka -c "SELECT 1;"
 
     - name: Run migrations
       env:
         DATABASE_URL: postgresql://postgres:postgres@postgres:5432/Talocka
       run: |
-        cd Talocka
         python manage.py migrate
 
     - name: Run tests
       env:
         DATABASE_URL: postgresql://postgres:postgres@postgres:5432/Talocka
-        PGPASSWORD: postgres
       run: |
-        cd Talocka
         python manage.py test
