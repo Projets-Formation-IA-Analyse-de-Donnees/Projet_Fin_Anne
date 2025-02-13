@@ -60,3 +60,7 @@ jobs:
         psql -h postgres -U postgres -c "CREATE DATABASE test_db;"
 
     - name: Run tests
+      env:
+        DATABASE_URL: postgres://postgres:postgres@postgres:5432/test_db
+      run: |
+        python manage.py test
