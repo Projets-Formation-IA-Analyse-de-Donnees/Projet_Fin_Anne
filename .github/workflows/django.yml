@@ -2,9 +2,9 @@ name: Django CI
 
 on:
   push:
-    branches: [ main ]
+    branches: [main]
   pull_request:
-    branches: [ main ]
+    branches: [main]
 
 jobs:
   test:
@@ -12,54 +12,48 @@ jobs:
 
     services:
       postgres:
-        image: postgres:13
-        env:
-          POSTGRES_USER: postgres
-          POSTGRES_PASSWORD: postgres
-          POSTGRES_DB: Talocka
+        image: postgres:latest  # Utilise l'image officielle de PostgreSQL
         ports:
-          - 5432:5432
-        options: >-
-          --health-cmd pg_isready
-          --health-interval 5s
-          --health-timeout 10s
-          --health-retries 10
-
+          - "5432:5432"  # Mappe le port 5432 du conteneur au port 5432 de la machine hôte
+        env:
+          POSTGRES_PASSWORD: postgres  # Mot de passe de l'utilisateur postgres
+          POSTGRES_DB: Talocka  # Nom de la base de données par défaut
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v3
+      - name: Checkout repository
+        uses: actions/checkout@v3
 
-    - name: Set up Python
-      uses: actions/setup-python@v4
-      with:
-        python-version: '3.10'
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
 
-    - name: Install dependencies
-      run: |
-        python -m pip install --upgrade pip
-        pip install -r requirements.txt
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
 
-    - name: Wait for PostgreSQL to be ready
-      run: |
-        for i in {1..30}; do
-          if PGPASSWORD=postgres psql -h postgres -U postgres -d Talocka -c "SELECT 1;" > /dev/null 2>&1; then
-            echo "PostgreSQL is ready!"
-            exit 0
-          fi
-          echo "Waiting for PostgreSQL..."
-          sleep 2
-        done
-        echo "PostgreSQL failed to start. Exiting."
-        exit 1
+      - name: Wait for PostgreSQL to be ready
+        run: |
+          for i in {1..30}; do
+            if PGPASSWORD=mysecretpassword psql -h postgres -U postgres -d Talocka -c "SELECT 1;" > /dev/null 2>&1; then
+              echo "PostgreSQL is ready!"
+              exit 0
+            fi
+            echo "Waiting for PostgreSQL..."
+            sleep 2
+          done
+          echo "PostgreSQL failed to start. Exiting."
+          exit 1
 
-    - name: Run migrations
-      env:
-        DATABASE_URL: postgresql://postgres:postgres@postgres:5432/Talocka
-      run: |
-        python manage.py migrate
+      - name: Run migrations
+        env:
+          DATABASE_URL: postgresql://postgres:mysecretpassword@postgres:5432/Talocka
+        run: |
+          python manage.py migrate
 
-    - name: Run tests
-      env:
-        DATABASE_URL: postgresql://postgres:postgres@postgres:5432/Talocka
-      run: |
-        python manage.py test
+      - name: Run tests
+        env:
+          DATABASE_URL: postgresql://postgres:mysecretpassword@postgres:5432/Talocka
+        run: |
+          python manage.py test
+
