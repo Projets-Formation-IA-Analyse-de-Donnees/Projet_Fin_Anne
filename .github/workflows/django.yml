@@ -21,9 +21,9 @@ jobs:
           - 5432:5432
         options: >-
           --health-cmd pg_isready
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
+          --health-interval 5s
+          --health-timeout 10s
+          --health-retries 10
 
     steps:
     - name: Checkout repository
@@ -41,13 +41,13 @@ jobs:
 
     - name: Wait for PostgreSQL to be ready
       run: |
-        while ! pg_isready -h postgres -U postgres; do
+        until pg_isready -h postgres -U postgres; do
           sleep 1
         done
 
-    - name: Create database
+    - name: Vérifier la connexion PostgreSQL
       run: |
-        psql -h postgres -U postgres -c "CREATE DATABASE Talocka;"
+        PGPASSWORD=postgres psql -h postgres -U postgres -d Talocka -c "SELECT 1;"
 
     - name: Run migrations
       env:
@@ -55,8 +55,8 @@ jobs:
       run: |
         python Talocka/manage.py migrate
 
-    - name: Run tests
-      env:
-        DATABASE_URL: postgres://postgres:postgres@postgres:5432/test_db
+    - name: Create test database
       run: |
-        python manage.py test
+        psql -h postgres -U postgres -c "CREATE DATABASE test_db;"
+
+    - name: Run tests
