@@ -31,9 +31,11 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v2
 
-    - name: Afficher la structure du projet
+    - name: Vérifier les fichiers présents
       run: |
+        echo "Emplacement actuel :"
         pwd
+        echo "Contenu du répertoire :"
         ls -R
 
     - name: Installer Docker Compose
@@ -44,12 +46,14 @@ jobs:
 
     - name: Démarrer Docker Compose
       run: |
-        cd $GITHUB_WORKSPACE  # S'assurer qu'on est bien dans le bon répertoire
-        docker-compose up -d
+        cd Talocka  # Aller dans le bon répertoire
+        ls -la  # Vérifier la présence du fichier
+        docker-compose -f docker-compose.yml up -d
         docker-compose exec web python manage.py migrate
         docker-compose exec web python manage.py test
 
     - name: Arrêter Docker Compose
       run: |
-        cd $GITHUB_WORKSPACE
+        cd Talocka
         docker-compose down
+
