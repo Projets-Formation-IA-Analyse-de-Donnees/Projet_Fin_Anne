@@ -16,8 +16,8 @@ jobs:
       db:
         image: postgres:13  # Utilise l'image de PostgreSQL
         env:
-          POSTGRES_USER: postgres
-          POSTGRES_PASSWORD: postgres
+          POSTGRES_USER: user
+          POSTGRES_PASSWORD: password
           POSTGRES_DB: mydb
         ports:
           - 5432:5432
