@@ -1,0 +1,63 @@
+name: Django CI with Docker
+
+on:
+  push:
+    branches:
+      - main  # Déclenche l'action sur la branche 'main'
+  pull_request:
+    branches:
+      - main  # Déclenche l'action pour les pull requests sur 'main'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest  # Utilise la dernière version d'Ubuntu pour l'environnement d'exécution
+
+    services:
+      db:
+        image: postgres:13  # Utilise l'image de PostgreSQL
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: mydb
+        ports:
+          - 5432:5432
+        # Assure-toi que la base de données soit prête avant que l'application Django commence
+        options: >-
+          --health-cmd="pg_isready -U user -d mydb"
+          --health-interval=5s
+          --health-timeout=5s
+          --health-retries=5
+
+    steps:
+      # Étape 1: Checkout du code
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      # Étape 2: Installer Docker
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v1
+
+      # Étape 3: Construire l'image Docker
+      - name: Build the Docker image
+        run: |
+          docker-compose -f docker-compose.yml build
+
+      # Étape 4: Lancer les conteneurs en arrière-plan
+      - name: Start the containers
+        run: |
+          docker-compose -f docker-compose.yml up -d
+
+      # Étape 5: Appliquer les migrations (si nécessaire)
+      - name: Apply migrations
+        run: |
+          docker-compose exec web python manage.py migrate
+
+      # Étape 6: Exécuter les tests Django
+      - name: Run tests
+        run: |
+          docker-compose exec web python manage.py test
+
+      # Étape 7: Arrêter les conteneurs après les tests
+      - name: Stop containers
+        run: |
+          docker-compose down
