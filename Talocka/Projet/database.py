@@ -1,29 +1,11 @@
-import mongoengine
-# MONGO_URI, MONGO_DB_NAME, MONGO_USERNAME, MONGO_PASSWORD, MONGO_AUTH_SOURCE
+from mongoengine import connect
 
-def connect_to_mongodb():
-    """
-    Se connecte à MongoDB en utilisant les paramètres définis dans settings.py.
-    """
-    mongoengine.connect(
-    db='mydb',  
-    username='mongo',
-    password='mongo',
-    host='mongodb://mongodb:27017/mydb', 
-    authentication_source='admin',  
-)
+MONGO_DB_NAME = "my_mongodb"
+MONGO_USER = "mongo"
+MONGO_PASSWORD = "mongo"
+MONGO_HOST = "mongodb" 
+MONGO_PORT = 27017
 
-from mongoengine import Document, StringField
+MONGO_URI = f"mongodb://{MONGO_USER}:{MONGO_PASSWORD}@{MONGO_HOST}:{MONGO_PORT}/{MONGO_DB_NAME}?authSource=admin"
 
-
-# Appeler la fonction de connexion avant de travailler avec les modèles
-connect_to_mongodb()
-
-# Définir un modèle MongoDB
-class Projet(Document):
-    name = StringField()
-    
-
-# Fonction pour ajouter un utilisateur
-def add_user(name, email):
-    user = Projet(name=name, email=email)
+connect(db=MONGO_DB_NAME, host=MONGO_URI)
