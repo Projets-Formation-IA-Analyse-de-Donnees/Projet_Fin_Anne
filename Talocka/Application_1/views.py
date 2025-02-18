@@ -15,23 +15,20 @@ def projets(request):
     form = ProjetForm()
     return render(request,'projets.html',{"form":form})
 
+@login_required
 def create_projet(request):
-    if request.method=='POST':
+    if request.method == 'POST':
         form = ProjetForm(request.POST)
         if form.is_valid():
-            uder_id = request.user.id
-            name = form.cleaned_data.get('name')
-            description = form.cleaned_data.get('description')
-            now = datetime.now().date()
-            projet = Projet_User.objects.create(
-            name= name,
-            description=description,
-            date_de_creation = now,
-            date_de_modification = now,
-            utilisateur=request.user    
-)
-            print("go")
-        return redirect('projets')
+            projet = form.save(commit=False) 
+            projet.utilisateur = request.user 
+            projet.date_de_creation = datetime.now().date()
+            projet.date_de_modification = datetime.now().date()
+            projet.save()  
+
+            return redirect('projets')  
+
     else:
-        form = ProjetForm()
-        return redirect('projets')
+        form = ProjetForm()  
+
+    return render(request, 'projets.html', {'form': form})
