@@ -43,3 +43,11 @@ def create_projet(request):
             messages.error(request,"Erreur lors du chargement du formulaire")  
             return redirect('projets')  
     return redirect('projets')
+
+
+@login_required
+def modifier_projet(request):
+    if request.method=="POST":
+        Modifier = request.POST.get('Modifier',None)
+        Supprimer = request.POST.get('Supprimer',None)
+        return render(request,'modifier_projet.html',context={'Modifier':Modifier,"Supprimer":Supprimer})

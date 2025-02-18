@@ -1,0 +1,10 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+<h1>Votre projet</h1>
+
+{% if Modifier%}
+<p>{{ Modifier }}</p>
+{% endif %}
+
+{% endblock %}

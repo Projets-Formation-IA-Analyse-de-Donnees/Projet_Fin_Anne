@@ -21,12 +21,13 @@
             {% if request.resolver_match.url_name != 'deconnexion' %}
                 <a href="{% url 'deconnexion' %}">Déconnexion</a>
             {% endif %}
-            {% if request.resolver_match.url_name != 'projets' %}
-                <a href="{% url 'projets' %}">projets</a>
-            {% endif %}
             {% if request.resolver_match.url_name != 'accueil' %}
                 <a href="{% url 'accueil' %}">{% block title %}Auto_ML{% endblock %}</a>
             {% endif %}
+            {% if request.resolver_match.url_name != 'projets' %}
+                <a href="{% url 'projets' %}">projets</a>
+            {% endif %}
+            
         {% endif %}
 
 

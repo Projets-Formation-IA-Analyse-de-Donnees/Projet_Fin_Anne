@@ -28,4 +28,5 @@ urlpatterns = [
     path('accueil/', app_1_views.accueil , name='accueil'),
     path('create_projet/', app_1_views.create_projet , name='create_projet'),
     path('projets/', app_1_views.projets , name='projets'),
+    path('modifier_projet/', app_1_views.modifier_projet , name='modifier_projet'),
     ]
