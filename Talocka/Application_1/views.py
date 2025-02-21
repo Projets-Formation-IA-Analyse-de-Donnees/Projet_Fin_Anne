@@ -7,6 +7,7 @@ from .models import Projet_User
 from django.contrib.auth import login, logout, authenticate
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
+from django.shortcuts import get_object_or_404
 
 @login_required
 def accueil(request):
@@ -44,10 +45,64 @@ def create_projet(request):
             return redirect('projets')  
     return redirect('projets')
 
+# @login_required
+# def modifier_projet(request):
+#     if request.method == "POST":
+#         projet_id = request.POST.get('Modifier', None)
+#         print("projet_id",projet_id)
+#         projet = get_object_or_404(Projet_User, id=projet_id, utilisateur=request.user)
+#         form = ProjetForm(request.POST, instance=projet)
+#         if form.is_valid():
+#             form.save()  
+#             messages.success(request, "Projet modifié avec succès !")
+#             return redirect('projets')
+#         messages.error(request, "Erreur lors de la modification du projet.")
+#         print(form.errors) 
+#         return render(request, 'modifier_projet.html', {'form': form, 'projet': projet})
+
+#     return redirect('projets')
 
 @login_required
 def modifier_projet(request):
-    if request.method=="POST":
-        Modifier = request.POST.get('Modifier',None)
+    if request.method == "POST":
+        projet_id = request.POST.get("projet_id")
+        if projet_id:
+            projet = get_object_or_404(Projet_User, id=projet_id, utilisateur=request.user)
+            form = ProjetForm(request.POST, instance=projet)  
+            if form.is_valid():
+                form.save()
+                messages.success(request, "Projet modifié avec succès !")
+                return redirect('projets')
+            else:
+                messages.error(request, f"Erreur lors de la modification du projet{form.errors}.")
+                return render(request, 'modifier_projet.html', {'form': form, 'projet': projet})
+        else:
+            messages.error(request, "Aucun projet sélectionné pour modification.")
+            return redirect('projets')
+
+    else:  
+        projet_id = request.GET.get("projet_id")  
+        if projet_id:
+            projet = get_object_or_404(Projet_User, id=projet_id, utilisateur=request.user)
+            form = ProjetForm(instance=projet)  
+            return render(request, 'modifier_projet.html', {'form': form, 'projet': projet})
+        else:
+            messages.error(request, "Aucun projet sélectionné pour modification.")
+            return redirect('projets')
+
+
+    
+@login_required
+def delete_projet(request):
+    if request.method == 'POST':
         Supprimer = request.POST.get('Supprimer',None)
-        return render(request,'modifier_projet.html',context={'Modifier':Modifier,"Supprimer":Supprimer})
+        if Supprimer:
+            projet = get_object_or_404(Projet_User, id=Supprimer, utilisateur=request.user)
+            projet.delete()
+            messages.success(request, "Projet supprimé avec succès !")
+            return redirect('projets')  
+        else:
+            messages.success(request, "Projet non trouvé")
+            return redirect('projets')  
+
+    return redirect('projets')

@@ -1,10 +1,13 @@
 {% extends 'base.html' %}
-{% load static %}
 {% block content %}
-<h1>Votre projet</h1>
+<h2>Modifier le projet : {{ projet.name }}</h2>
 
-{% if Modifier%}
-<p>{{ Modifier }}</p>
-{% endif %}
+<form method="POST" action="{% url 'modifier_projet' %}">
+    {% csrf_token %}
+    <input type="hidden" name="projet_id" value="{{ projet.id }}">
+    {{ form.as_p }}  
+    <button type="submit" class="btn btn-success">Enregistrer les modifications</button>
+</form>
+
 
 {% endblock %}

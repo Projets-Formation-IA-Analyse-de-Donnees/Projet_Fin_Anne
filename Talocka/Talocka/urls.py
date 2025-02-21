@@ -29,4 +29,5 @@ urlpatterns = [
     path('create_projet/', app_1_views.create_projet , name='create_projet'),
     path('projets/', app_1_views.projets , name='projets'),
     path('modifier_projet/', app_1_views.modifier_projet , name='modifier_projet'),
+    path('delete_projet/', app_1_views.delete_projet , name='delete_projet'),
     ]
