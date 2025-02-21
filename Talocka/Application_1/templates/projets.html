@@ -32,9 +32,8 @@
                     {% csrf_token %}
                     <button type="submit" class="btn btn-primary">C'est parti !</button>
                 </form>
-                <form method="post" action="{% url 'modifier_projet' %}">
+                <form method="post" action="{% url 'modifier_projet' project.id %}">
                     {% csrf_token %}
-                    <input type="hidden" name="projet_id" value="{{ project.id }}">
                     <button type="submit" class="btn btn-warning">Modifier</button>
                 </form>
                 <form method="post" action="{% url 'delete_projet' %}">

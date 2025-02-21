@@ -63,33 +63,29 @@ def create_projet(request):
 #     return redirect('projets')
 
 @login_required
-def modifier_projet(request):
+def modifier_projet(request, projet_id):
+    projet = get_object_or_404(Projet_User, id=projet_id, utilisateur=request.user)
+
     if request.method == "POST":
-        projet_id = request.POST.get("projet_id")
-        if projet_id:
-            projet = get_object_or_404(Projet_User, id=projet_id, utilisateur=request.user)
-            form = ProjetForm(request.POST, instance=projet)  
-            if form.is_valid():
-                form.save()
-                messages.success(request, "Projet modifié avec succès !")
-                return redirect('projets')
-            else:
-                messages.error(request, f"Erreur lors de la modification du projet{form.errors}.")
-                return render(request, 'modifier_projet.html', {'form': form, 'projet': projet})
-        else:
-            messages.error(request, "Aucun projet sélectionné pour modification.")
-            return redirect('projets')
+        form = ProjetForm(request.POST)  
+        return render(request, 'modifier_projet.html', {'form': form, 'projet': projet})
 
-    else:  
-        projet_id = request.GET.get("projet_id")  
-        if projet_id:
-            projet = get_object_or_404(Projet_User, id=projet_id, utilisateur=request.user)
-            form = ProjetForm(instance=projet)  
+    else:
+        return redirect('projets') 
+
+@login_required
+def modification(request,projet_id) :
+    projet = get_object_or_404(Projet_User, id=projet_id, utilisateur=request.user)
+    if request.method == 'POST':
+        form = ProjetForm(request.POST, instance=projet) 
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Projet modifié avec succès !")
+            return redirect('projets')  
+
+        else:
+            messages.error(request, "Erreur lors de la modification du projet. Veuillez corriger les erreurs ci-dessous.")
             return render(request, 'modifier_projet.html', {'form': form, 'projet': projet})
-        else:
-            messages.error(request, "Aucun projet sélectionné pour modification.")
-            return redirect('projets')
-
 
     
 @login_required

@@ -1,13 +1,23 @@
 {% extends 'base.html' %}
+
 {% block content %}
 <h2>Modifier le projet : {{ projet.name }}</h2>
 
-<form method="POST" action="{% url 'modifier_projet' %}">
+<!-- Affichage des messages -->
+{% if messages %}
+    <div class="messages">
+        {% for message in messages %}
+            <div class="message {% if message.tags %} {{ message.tags }} {% endif %}">
+                {{ message }}
+            </div>
+        {% endfor %}
+    </div>
+{% endif %}
+
+<form method="POST" action="{% url 'modification' projet.id %}">
     {% csrf_token %}
-    <input type="hidden" name="projet_id" value="{{ projet.id }}">
     {{ form.as_p }}  
     <button type="submit" class="btn btn-success">Enregistrer les modifications</button>
 </form>
-
 
 {% endblock %}
