@@ -21,6 +21,7 @@ def connexion(request):
                 return redirect('accueil')
             else:
                 form.add_error(None, "Nom d'utilisateur ou mot de passe incorrect.")
+                return redirect('accueil')
 
     return render(request, "connexion.html", {"form": form})
 

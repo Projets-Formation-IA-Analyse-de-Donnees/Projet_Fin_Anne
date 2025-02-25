@@ -45,23 +45,6 @@ def create_projet(request):
             return redirect('projets')  
     return redirect('projets')
 
-# @login_required
-# def modifier_projet(request):
-#     if request.method == "POST":
-#         projet_id = request.POST.get('Modifier', None)
-#         print("projet_id",projet_id)
-#         projet = get_object_or_404(Projet_User, id=projet_id, utilisateur=request.user)
-#         form = ProjetForm(request.POST, instance=projet)
-#         if form.is_valid():
-#             form.save()  
-#             messages.success(request, "Projet modifié avec succès !")
-#             return redirect('projets')
-#         messages.error(request, "Erreur lors de la modification du projet.")
-#         print(form.errors) 
-#         return render(request, 'modifier_projet.html', {'form': form, 'projet': projet})
-
-#     return redirect('projets')
-
 @login_required
 def modifier_projet(request, projet_id):
     projet = get_object_or_404(Projet_User, id=projet_id, utilisateur=request.user)
@@ -87,7 +70,6 @@ def modification(request,projet_id) :
             messages.error(request, "Erreur lors de la modification du projet. Veuillez corriger les erreurs ci-dessous.")
             return render(request, 'modifier_projet.html', {'form': form, 'projet': projet})
 
-    
 @login_required
 def delete_projet(request):
     if request.method == 'POST':
