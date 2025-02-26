@@ -31,4 +31,6 @@ urlpatterns = [
     path('modifier_projet/<int:projet_id>/', app_1_views.modifier_projet, name='modifier_projet'),
     path('delete_projet/', app_1_views.delete_projet , name='delete_projet'),
     path('modification/<int:projet_id>/', app_1_views.modification , name='modification'),
+    path('upload_dataset/<int:projet_id>/', app_1_views.upload_dataset , name='upload_dataset'),
+    path('delete_dataset/<int:dataset_id>/', app_1_views.delete_dataset, name='delete_dataset'),
     ]

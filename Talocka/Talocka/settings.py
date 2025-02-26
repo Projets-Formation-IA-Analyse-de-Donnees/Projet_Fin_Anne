@@ -29,6 +29,10 @@ DEBUG = True
 ALLOWED_HOSTS = []
 
 
+# MongoDB configuration
+MONGO_URI = "mongodb://mongo:mongo@mongodb:27017/"  
+MONGO_DB_NAME = "my_mongodb"  
+
 # Application definition
 
 INSTALLED_APPS = [
@@ -40,7 +44,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'Authentification',
     'Application_1',
-    'Projet'
+    'Projet',
+   
 ]
 
 MIDDLEWARE = [
@@ -85,8 +90,18 @@ DATABASES = {
         'PASSWORD': 'postgres',
         'HOST': 'db',  
         'PORT': '5432',
+    },
+    'mongodb': {
+        'ENGINE': 'djongo',
+        'NAME': 'my_mongodb',
+        'ENFORCE_SCHEMA': False,
+        'CLIENT': {
+            'host': 'mongodb://mongo:mongo@mongodb:27017/my_mongodb'
+        }  
     }
 }
+# settings.py
+
 
 
 # Password validation

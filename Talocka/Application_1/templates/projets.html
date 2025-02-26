@@ -28,7 +28,7 @@
             <h3 class="project-title">{{ project.name|slice:":30" }}{% if project.name|length > 30 %}...{% endif %}</h3>
             <p class="project-description">{{ project.description|slice:":30" }}{% if project.description|length > 30 %}...{% endif %}</h3></p>
             <div class="button-group">
-                <form method="post" action="{% url 'projets' %}">
+                <form method="post" action="{% url 'upload_dataset' project.id %}">
                     {% csrf_token %}
                     <button type="submit" class="btn btn-primary">C'est parti !</button>
                 </form>
