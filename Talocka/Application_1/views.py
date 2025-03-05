@@ -111,7 +111,10 @@ def upload_dataset(request, projet_id):
             return redirect("upload_dataset", projet_id=projet_id)
 
         else:
-            messages.error(request, "Erreur lors de la soumission du formulaire")
+            if form.is_valid():
+                messages.error(request, "Erreur lors de la soumission du formulaire")
+            else:
+                return render(request, "upload_dataset.html", context={"form": form, "projet": projet, "datasets": datasets})
 
     return render(request, "upload_dataset.html", context={"form": form, "projet": projet, "datasets": datasets})
 
