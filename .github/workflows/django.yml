@@ -16,9 +16,9 @@ jobs:
       postgres:
         image: postgres:13
         env:
-          POSTGRES_USER: postgres
-          POSTGRES_PASSWORD: postgres
-          POSTGRES_DB: mydb
+          POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
+          POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+          POSTGRES_DB: ${{ secrets.POSTGRES_DB }}
         ports:
           - 5432:5432
         options: >-
@@ -26,6 +26,18 @@ jobs:
           --health-timeout=30s
           --health-start-period=10s
           --health-retries=5
+
+    env:  # Variables d'environnement partagées entre toutes les étapes
+      SECRET_KEY_DJANGO: ${{ secrets.SECRET_KEY_DJANGO }}
+      DJANGO_DEBUG: ${{ secrets.DJANGO_DEBUG }}
+      DJANGO_ALLOWED_HOSTS: ${{ secrets.DJANGO_ALLOWED_HOSTS }}
+      MONGO_URI: ${{ secrets.MONGO_URI }}
+      MONGO_DB_NAME: ${{ secrets.MONGO_DB_NAME }}
+      POSTGRES_HOST: ${{ secrets.POSTGRES_HOST }}
+      POSTGRES_PORT: ${{ secrets.POSTGRES_PORT }}
+      MONGO_INITDB_ROOT_USERNAME: ${{ secrets.MONGO_INITDB_ROOT_USERNAME }}
+      MONGO_INITDB_ROOT_PASSWORD: ${{ secrets.MONGO_INITDB_ROOT_PASSWORD }}
+      MONGO_DB_NAME_KEY: ${{ secrets.MONGO_DB_NAME_KEY }}
 
     steps:
     - name: Checkout repository
