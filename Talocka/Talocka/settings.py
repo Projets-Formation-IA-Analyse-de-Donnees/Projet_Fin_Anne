@@ -11,7 +11,10 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 """
 
 from pathlib import Path
+import os
+from dotenv import load_dotenv
 
+load_dotenv()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -21,17 +24,19 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-+8pbu_coapi4^6l@nv935-p9!*(k5wjb%0#u=ll235_(m_+nm*'
+SECRET_KEY = os.getenv("SECRET_KEY_DJANGO")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.getenv("DJANGO_DEBUG", "False").lower() == "true"
 
-ALLOWED_HOSTS = []
+
+ALLOWED_HOSTS = os.getenv("DJANGO_ALLOWED_HOSTS", "").split(",")
+
 
 
 # MongoDB configuration
-MONGO_URI = "mongodb://mongo:mongo@mongodb:27017/"  
-MONGO_DB_NAME = "my_mongodb"  
+MONGO_URI = os.getenv("MONGO_URI") 
+MONGO_DB_NAME = os.getenv("MONGO_DB_NAME") 
 
 # Application definition
 
@@ -85,18 +90,18 @@ WSGI_APPLICATION = 'Talocka.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'mydb',
-        'USER': 'postgres',
-        'PASSWORD': 'postgres',
-        'HOST': 'db',  
-        'PORT': '5432',
+        'NAME': os.getenv("POSTGRES_DB"),
+        'USER': os.getenv("POSTGRES_USER"),
+        'PASSWORD': os.getenv("POSTGRES_PASSWORD"),
+        'HOST': os.getenv("POSTGRES_HOST"),  
+        'PORT': os.getenv("POSTGRES_PORT"),
     },
     'mongodb': {
         'ENGINE': 'djongo',
-        'NAME': 'my_mongodb',
+        'NAME': os.getenv("MONGO_DB_NAME_KEY"),
         'ENFORCE_SCHEMA': False,
         'CLIENT': {
-            'host': 'mongodb://mongo:mongo@mongodb:27017/my_mongodb'
+            'host': os.getenv("MONGO_URI") 
         }  
     }
 }

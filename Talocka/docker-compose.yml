@@ -12,6 +12,9 @@ services:
       - db-data:/var/lib/postgresql/data
     networks:
       - talocka-network
+    env_file:
+      - "C:/Users/naouf/Documents/1-Naoufel/1-projet/Projet_Fin_Dannée/Projet_Fin_Anne/.env"
+
 
   mongodb:
     image: mongo:latest
@@ -26,6 +29,8 @@ services:
       - mongodb-data:/data/db
     networks:
       - talocka-network
+    env_file:
+      - "C:/Users/naouf/Documents/1-Naoufel/1-projet/Projet_Fin_Dannée/Projet_Fin_Anne/.env"
 
   web:
     build: .
@@ -39,6 +44,8 @@ services:
       - mongodb
     networks:
       - talocka-network
+    env_file:
+      - "C:/Users/naouf/Documents/1-Naoufel/1-projet/Projet_Fin_Dannée/Projet_Fin_Anne/.env"
 
 volumes:
   db-data:
