@@ -32,7 +32,6 @@ jobs:
         ports:
           - 5432:5432
         options: >-
-          --health-cmd="pg_isready -U $POSTGRES_USER -d $POSTGRES_DB"
           --health-timeout=30s
           --health-start-period=10s
           --health-retries=5
@@ -52,6 +51,23 @@ jobs:
         sudo apt-get update
         sudo apt-get install -y docker-compose
         docker-compose --version
+    - name: Créer le fichier .env
+      run: |
+        echo "POSTGRES_USER=${{ secrets.POSTGRES_USER }}" >> .env
+        echo "POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }}" >> .env
+        echo "POSTGRES_DB=${{ secrets.POSTGRES_DB }}" >> .env
+        echo "POSTGRES_HOST=${{ secrets.POSTGRES_HOST }}" >> .env
+        echo "POSTGRES_PORT=${{ secrets.POSTGRES_PORT }}" >> .env
+        echo "MONGO_INITDB_ROOT_USERNAME=${{ secrets.MONGO_INITDB_ROOT_USERNAME }}" >> .env
+        echo "MONGO_INITDB_ROOT_PASSWORD=${{ secrets.MONGO_INITDB_ROOT_PASSWORD }}" >> .env
+        echo "MONGO_DB_NAME=${{ secrets.MONGO_DB_NAME }}" >> .env
+        echo "MONGO_URI=${{ secrets.MONGO_URI }}" >> .env
+        echo "SECRET_KEY_DJANGO=${{ secrets.SECRET_KEY_DJANGO }}" >> .env
+        echo "DJANGO_DEBUG=${{ secrets.DJANGO_DEBUG }}" >> .env
+        echo "DJANGO_ALLOWED_HOSTS=${{ secrets.DJANGO_ALLOWED_HOSTS }}" >> .env
+    - name: Vérifier les variables d’environnement
+      run: cat .env
+      
 
     - name: Démarrer Docker Compose
       run: |
