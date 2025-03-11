@@ -19,6 +19,16 @@ jobs:
           POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
           POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
           POSTGRES_DB: ${{ secrets.POSTGRES_DB }}
+          POSTGRES_HOST: ${{ secrets.POSTGRES_HOST }}
+          POSTGRES_PORT: ${{ secrets.POSTGRES_PORT }}
+          MONGO_INITDB_ROOT_USERNAME: ${{secrets.MONGO_INITDB_ROOT_USERNAME}}
+          MONGO_INITDB_ROOT_PASSWORD: ${{secrets.MONGO_INITDB_ROOT_PASSWORD}}
+          MONGO_DB_NAME: ${{secrets.MONGO_DB_NAME}}
+          MONGO_URI: ${{secrets.MONGO_URI}}
+          SECRET_KEY_DJANGO: ${{secrets.SECRET_KEY_DJANGO}}
+          DJANGO_DEBUG: ${{secrets.DJANGO_DEBUG}}
+          DJANGO_ALLOWED_HOSTS: ${{secrets.DJANGO_ALLOWED_HOSTS}}
+
         ports:
           - 5432:5432
         options: >-
