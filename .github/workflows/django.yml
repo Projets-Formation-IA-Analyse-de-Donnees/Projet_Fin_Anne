@@ -19,16 +19,6 @@ jobs:
           POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
           POSTGRES_DB: ${{ secrets.POSTGRES_DB }}
           POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
-          POSTGRES_HOST: ${{ secrets.POSTGRES_HOST }}
-          POSTGRES_PORT: ${{ secrets.POSTGRES_PORT }}
-          MONGO_INITDB_ROOT_USERNAME: ${{secrets.MONGO_INITDB_ROOT_USERNAME}}
-          MONGO_INITDB_ROOT_PASSWORD: ${{secrets.MONGO_INITDB_ROOT_PASSWORD}}
-          MONGO_DB_NAME: ${{secrets.MONGO_DB_NAME}}
-          MONGO_URI: ${{secrets.MONGO_URI}}
-          SECRET_KEY_DJANGO: ${{secrets.SECRET_KEY_DJANGO}}
-          DJANGO_DEBUG: ${{secrets.DJANGO_DEBUG}}
-          DJANGO_ALLOWED_HOSTS: ${{secrets.DJANGO_ALLOWED_HOSTS}}
-
         ports:
           - 5432:5432
         options: >-
@@ -36,7 +26,6 @@ jobs:
           --health-timeout=30s
           --health-start-period=10s
           --health-retries=5
-      
 
     steps:
     - name: Checkout repository
@@ -47,19 +36,26 @@ jobs:
         pwd
         ls -R
 
-    - name: Installer Docker et Docker Compose
+    - name: 🛠 Installer Docker et Docker Compose
       run: |
         sudo apt-get update
         sudo apt-get install -y docker-compose
         docker-compose --version
-    - name: Créer le fichier .env
+
+    - name: Vérifier si le répertoire Talocka existe
+      run: |
+        if [ ! -d "Talocka" ]; then
+          echo "Le répertoire Talocka est introuvable ! Vérifiez votre structure."
+          exit 1
+        fi
+
+    - name: Créer le fichier .env dans Talocka
       run: |
         cd Talocka
+        touch .env
         echo "POSTGRES_USER=${{ secrets.POSTGRES_USER }}" >> .env
         echo "POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }}" >> .env
         echo "POSTGRES_DB=${{ secrets.POSTGRES_DB }}" >> .env
-        echo "POSTGRES_HOST=${{ secrets.POSTGRES_HOST }}" >> .env
-        echo "POSTGRES_PORT=${{ secrets.POSTGRES_PORT }}" >> .env
         echo "MONGO_INITDB_ROOT_USERNAME=${{ secrets.MONGO_INITDB_ROOT_USERNAME }}" >> .env
         echo "MONGO_INITDB_ROOT_PASSWORD=${{ secrets.MONGO_INITDB_ROOT_PASSWORD }}" >> .env
         echo "MONGO_DB_NAME=${{ secrets.MONGO_DB_NAME }}" >> .env
@@ -68,22 +64,19 @@ jobs:
         echo "DJANGO_DEBUG=${{ secrets.DJANGO_DEBUG }}" >> .env
         echo "DJANGO_ALLOWED_HOSTS=${{ secrets.DJANGO_ALLOWED_HOSTS }}" >> .env
 
-
-    - name: Vérifier les variables d’environnement dans Talocka
+    - name: Vérifier les variables d’environnement
       run: |
         cd Talocka
         ls -la
-        cat .env  # Afficher le contenu pour debug
-
-      
+        cat .env
 
     - name: Démarrer Docker Compose
       run: |
-        cd Talocka  # Aller dans le bon répertoire
+        cd Talocka
         docker-compose up -d --build
-        docker-compose ps  # Vérifier si les conteneurs tournent
+        docker-compose ps
 
-    - name: Exécuter les migrations
+    - name: Appliquer les migrations Django
       run: |
         cd Talocka
         docker-compose run web python manage.py migrate
