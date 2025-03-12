@@ -1,13 +1,11 @@
 from django.test import TestCase
 from django.urls import reverse
 from django.contrib.auth.models import User
-from unittest.mock import patch, MagicMock,Mock
+from unittest.mock import patch, MagicMock, Mock
 from Application_1.models import Projet_User, DatasetMetadata
 from bson import ObjectId
 from .forms import DatasetUploadForm
 from django.core.files.uploadedfile import SimpleUploadedFile
-
-
 
 
 class ProjetTests(TestCase):
@@ -61,7 +59,6 @@ class ProjetTests(TestCase):
         self.assertEqual(Projet_User.objects.filter(name="Projet Existant", utilisateur=self.user).count(), 1)
 
 
-
 class MongoDBTests(TestCase):
 
     def setUp(self):
@@ -78,10 +75,9 @@ class MongoDBTests(TestCase):
             )
 
 
-   
-
+    @patch("Application_1.views.get_mongo_gridfs")  # Mock MongoDB
     def test_upload_dataset(self, mock_get_mongo_gridfs):
-        """ Tester l'upload d'un dataset dans MongoDB """
+        """Tester l'upload d'un dataset dans MongoDB"""
 
         mock_db = Mock()
         mock_grid_fs = Mock()
@@ -109,19 +105,18 @@ class MongoDBTests(TestCase):
         # Comparer les IDs sous forme de chaîne
         self.assertEqual(str(dataset.file_id), str(mock_file_id))
 
-
-
-
     @patch("Application_1.views.get_mongo_gridfs")  # Mock MongoDB
     def test_delete_dataset(self, mock_get_mongo_gridfs):
-        """ Tester la suppression d'un dataset dans MongoDB """
+        """Tester la suppression d'un dataset dans MongoDB"""
 
         # Mock de GridFS
         mock_db = Mock()
         mock_grid_fs = Mock()
         mock_get_mongo_gridfs.return_value = (mock_db, mock_grid_fs)
 
-        # Création d’un projet et d’un dataset
+        # Supprimer un projet et dataset existant s'il existe
+        Projet_User.objects.filter(name="Projet Test", utilisateur=self.user).delete()
+
         projet = Projet_User.objects.create(
             name="Projet Test",
             utilisateur=self.user
@@ -139,7 +134,7 @@ class MongoDBTests(TestCase):
         # Vérification de la redirection
         self.assertEqual(response.status_code, 302)
 
-        # **Correction ici** : Vérifier que `delete` a été appelé
+        # Vérifier que `delete` a été appelé
         mock_grid_fs.delete.assert_called_once_with(ObjectId(dataset.file_id))
 
         # Vérifier que le dataset a bien été supprimé
