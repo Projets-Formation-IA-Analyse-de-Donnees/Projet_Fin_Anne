@@ -73,15 +73,13 @@ class MongoDBTests(TestCase):
     @patch('Application_1.utils.get_mongo_gridfs')
     def test_upload_dataset(self, mock_get_mongo_gridfs):
         """Tester l'upload d'un dataset dans MongoDB"""
-        # Mock MongoDB GridFS
         mock_db = MagicMock()
         mock_grid_fs = MagicMock()
-        mock_file_id = ObjectId()
+        mock_file_id = ObjectId()  # Génère un ObjectId correct
 
         mock_grid_fs.put.return_value = mock_file_id
         mock_get_mongo_gridfs.return_value = (mock_db, mock_grid_fs)
 
-        # Simulation d'un fichier
         file_mock = MagicMock()
         file_mock.name = "test_file.csv"
         file_mock.read.return_value = b"data"
@@ -92,12 +90,10 @@ class MongoDBTests(TestCase):
             'file': file_mock
         })
 
-        # Vérification que le dataset a bien été créé
         self.assertEqual(response.status_code, 302)
-        self.assertTrue(DatasetMetadata.objects.filter(projet=self.projet, dataset_name="Dataset Test").exists())
-
         dataset = DatasetMetadata.objects.get(projet=self.projet, dataset_name="Dataset Test")
-        self.assertEqual(dataset.file_id, str(mock_file_id))
+        self.assertEqual(str(dataset.file_id), str(mock_file_id))  # Correction
+
 
     @patch('Application_1.utils.get_mongo_gridfs')
     def test_delete_dataset(self, mock_get_mongo_gridfs):
