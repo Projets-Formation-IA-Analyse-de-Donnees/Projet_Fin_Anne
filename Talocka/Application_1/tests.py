@@ -5,6 +5,7 @@ from unittest.mock import patch, MagicMock,Mock
 from Application_1.models import Projet_User, DatasetMetadata
 from bson import ObjectId
 from .forms import DatasetUploadForm
+from django.core.files.uploadedfile import SimpleUploadedFile
 
 
 
@@ -45,6 +46,9 @@ class ProjetTests(TestCase):
 
     def test_create_duplicate_projet(self):
         """Tester la création d'un projet en double (même nom)"""
+        # Supprimer un projet existant s'il existe
+        Projet_User.objects.filter(name="Projet Existant", utilisateur=self.user).delete()
+
         response = self.client.post(reverse('create_projet'), {
             'name': 'Projet Existant',  # Nom déjà utilisé
             'description': 'Tentative de création en double'
@@ -57,6 +61,7 @@ class ProjetTests(TestCase):
         self.assertEqual(Projet_User.objects.filter(name="Projet Existant", utilisateur=self.user).count(), 1)
 
 
+
 class MongoDBTests(TestCase):
 
     def setUp(self):
@@ -64,29 +69,36 @@ class MongoDBTests(TestCase):
         self.user = User.objects.create_user(username='testuser', password='testpassword')
         self.client.login(username='testuser', password='testpassword')
 
-        self.projet = Projet_User.objects.create(
-            name="Projet Test",
-            description="Projet pour tester MongoDB",
-            utilisateur=self.user
-        )
+        # Créer un projet si nécessaire
+        if not Projet_User.objects.filter(name="Projet Test", utilisateur=self.user).exists():
+            self.projet = Projet_User.objects.create(
+                name="Projet Test",
+                description="Projet pour tester MongoDB",
+                utilisateur=self.user
+            )
 
-    @patch("Application_1.views.get_mongo_gridfs")
+
+   
+
     def test_upload_dataset(self, mock_get_mongo_gridfs):
         """ Tester l'upload d'un dataset dans MongoDB """
 
         mock_db = Mock()
         mock_grid_fs = Mock()
-        
-        # 🔥 Correction : Simuler un ObjectId correct
+
+        # Simuler un ObjectId correct
         mock_file_id = ObjectId()  
         mock_grid_fs.put.return_value = mock_file_id  # GridFS retourne cet ID
 
         mock_get_mongo_gridfs.return_value = (mock_db, mock_grid_fs)
 
+        # Créer un fichier en mémoire pour l'upload
+        file = SimpleUploadedFile("test.txt", b"Contenu test", content_type="text/plain")
+
         response = self.client.post(reverse("upload_dataset", args=[self.projet.id]), {
             "dataset_name": "Test Dataset",
             "description": "Dataset de test",
-            "file": DatasetUploadForm("test.txt", b"Contenu test")
+            "file": file  # Utiliser le fichier ici
         })
 
         # Vérification de la redirection
@@ -94,8 +106,9 @@ class MongoDBTests(TestCase):
 
         dataset = DatasetMetadata.objects.get(dataset_name="Test Dataset")
         
-        # **Correction ici** : Comparer les IDs sous forme de chaîne
+        # Comparer les IDs sous forme de chaîne
         self.assertEqual(str(dataset.file_id), str(mock_file_id))
+
 
 
 
