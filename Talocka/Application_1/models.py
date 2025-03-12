@@ -20,5 +20,10 @@ class DatasetMetadata(models.Model):
     file_id = models.CharField(max_length=255)  
     uploaded_at = models.DateTimeField(auto_now_add=True)
 
+    class Meta:
+        constraints = [
+        models.UniqueConstraint(fields=['dataset_name', 'projet'], name='unique_dataset_per_project')
+    ]
+
     def __str__(self):
         return f"{self.dataset_name} ({self.file_id})"
