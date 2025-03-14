@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<h2>Modifier le dataset : {{ dataset.dataset_name }} pour le projet {{ projet.name }}</h2>
+
+{% if messages %}
+    <div class="messages">
+        {% for message in messages %}
+            <div class="message {% if message.tags %} {{ message.tags }} {% endif %}">
+                {{ message }}
+            </div>
+        {% endfor %}
+    </div>
+{% endif %}
+
+<form method="POST" enctype="multipart/form-data" action="{% url 'modifier_dataset' projet.id dataset.id %}">
+    {% csrf_token %}
+    {{ form.as_p }}  
+    <button type="submit" class="btn btn-success">Enregistrer les modifications</button>
+</form>
+
+{% endblock %}

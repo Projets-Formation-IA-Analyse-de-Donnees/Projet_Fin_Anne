@@ -57,6 +57,71 @@ def modifier_projet(request, projet_id):
 
     else:
         return redirect('projets') 
+    
+from django.shortcuts import render, get_object_or_404, redirect
+from django.contrib import messages
+from .forms import DatasetUploadForm
+from .models import DatasetMetadata
+from django.contrib.auth.decorators import login_required
+
+@login_required
+def modifier_dataset(request, projet_id, dataset_id):
+    # Récupérer le dataset à modifier
+    dataset = get_object_or_404(DatasetMetadata, id=dataset_id, projet__utilisateur=request.user)
+
+    if request.method == 'POST':
+        # Créer un formulaire avec les données soumises
+        form = DatasetUploadForm(request.POST, request.FILES)
+
+        # Vérifiez si le formulaire est valide
+        if form.is_valid():
+            dataset_name = form.cleaned_data['dataset_name']
+            description = form.cleaned_data['description']
+            file = form.cleaned_data.get('file')  # Si un fichier est téléchargé
+
+            # Mettre à jour les informations du dataset
+            dataset.dataset_name = dataset_name
+            dataset.description = description
+
+            # Si un fichier est téléchargé, on met à jour le fichier
+            if file:
+                # Utilisez MongoDB ou autre logique pour gérer le fichier
+                db, grid_fs = get_mongo_gridfs()
+                file_id = grid_fs.put(file, filename=dataset_name)
+                dataset.file_id = str(file_id)
+
+            # Sauvegarder les modifications
+            dataset.save()
+            messages.success(request, "Le dataset a été mis à jour avec succès!")
+            return redirect('dataset_details', dataset_id=dataset.id)
+        else:
+            # Si le formulaire contient des erreurs
+            messages.error(request, "Le formulaire contient des erreurs.")
+            return render(request, 'dataset_details.html', {
+                'form': form, 'dataset': dataset, 'projet': dataset.projet
+            })
+    
+    else:
+        # Pré-remplir le formulaire avec les données existantes
+        form = DatasetUploadForm(initial={'dataset_name': dataset.dataset_name, 'description': dataset.description})
+
+        return render(request, 'dataset_details.html', {
+            'form': form, 'dataset': dataset, 'projet': dataset.projet
+        })
+
+
+@login_required
+def dataset_details(request, dataset_id):
+    dataset = get_object_or_404(DatasetMetadata, id=dataset_id, projet__utilisateur=request.user)
+    
+    # Récupérer les informations du projet associé au dataset
+    projet = dataset.projet
+    
+    return render(request, 'dataset_details.html', {
+        'dataset': dataset,
+        'projet': projet
+    })
+
 
 @login_required
 def modification(request,projet_id) :

@@ -22,6 +22,13 @@
   {% for dataset in datasets %}
     <li>
       {{ dataset.dataset_name }} 
+      
+      <form action="{% url 'modifier_dataset' projet.id dataset.id %}" method="POST" style="display:inline;">
+        {% csrf_token %}
+        <button type="submit" >
+          Modifier dataset
+        </button>
+      </form>
       <form action="{% url 'delete_dataset' dataset.id %}" method="POST" style="display:inline;">
         {% csrf_token %}
         <button type="submit" onclick="return confirm('Voulez-vous vraiment supprimer ce dataset ?');">
