@@ -9,9 +9,10 @@ https://docs.djangoproject.com/en/5.1/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.1/ref/settings/
 """
-
+from dotenv import load_dotenv
 from pathlib import Path
-
+import os
+load_dotenv()   
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -31,7 +32,7 @@ ALLOWED_HOSTS = []
 
 # MongoDB configuration
 MONGO_URI = "mongodb://mongo:mongo@mongodb:27017/"  
-MONGO_DB_NAME = "my_mongodb"  
+MONGO_DB_NAME =  os.getenv("MONGO_DB_NAME")
 
 # Application definition
 
